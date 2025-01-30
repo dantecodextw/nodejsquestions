@@ -159,9 +159,143 @@
 
 ---
 
-### Evaluation Tips:
-- **Depth of Knowledge**: A senior candidate should explain **why** and **how**, not just syntax.  
-- **Best Practices**: Look for mentions of security (CORS, rate limiting), logging (Winston), and testing (Jest/Mocha).  
-- **Real-World Experience**: Ask for examples of scaling, debugging, or collaborating on large codebases.
+---
 
-This list balances **core concepts** and **advanced topics** to assess both foundational understanding and hands-on expertise. Adjust based on the candidate’s specific projects!
+Understood! Here’s a revised list of **theoretical questions** for MongoDB and SQL, focusing on concepts like sharding, aggregation, normalization, and scalability. Answers are included for verification:
+
+---
+
+### **MongoDB Concepts**
+1. **What is the purpose of a document database like MongoDB, and how does it differ from a relational database?**  
+   *Expected Answer*:  
+   MongoDB is schema-less, stores data as JSON-like documents (BSON), and allows nested structures. Unlike relational databases, it does not enforce rigid table schemas or require joins for related data, prioritizing flexibility and scalability.
+
+2. **Explain how MongoDB achieves horizontal scalability.**  
+   *Expected Answer*:  
+   MongoDB uses **sharding**, where data is partitioned into chunks and distributed across multiple servers (shards). The `mongos` router directs queries to the appropriate shard, enabling parallel processing and handling large datasets.
+
+3. **What is a shard key? What factors make a shard key effective?**  
+   *Expected Answer*:  
+   A shard key determines how data is distributed across shards. A good shard key has:  
+   - **High cardinality** (many unique values to avoid hotspots).  
+   - **Even distribution** (prevents uneven load on shards).  
+   - **Alignment with query patterns** (e.g., using `userId` for user-centric queries).
+
+4. **Describe the role of the aggregation pipeline in MongoDB.**  
+   *Expected Answer*:  
+   The aggregation pipeline processes documents through stages (e.g., `$match`, `$group`, `$project`) to filter, transform, and compute results. It enables complex operations like grouping, sorting, and joining collections (via `$lookup`).
+
+5. **How does MongoDB ensure data consistency in a sharded cluster?**  
+   *Expected Answer*:  
+   MongoDB provides **eventual consistency** by default. For strong consistency, queries can use **read concerns** (e.g., `"majority"`) or **write concerns** (e.g., `{ w: "majority" }`) to ensure data is replicated across nodes before confirming success.
+
+---
+
+### **SQL Concepts**
+6. **What is normalization in SQL? Explain 1NF, 2NF, and 3NF.**  
+   *Expected Answer*:  
+   Normalization reduces redundancy by structuring data into tables.  
+   - **1NF**: Eliminate repeating groups; ensure atomic values.  
+   - **2NF**: Remove partial dependencies (all non-key fields depend on the full primary key).  
+   - **3NF**: Remove transitive dependencies (non-key fields depend only on the primary key).
+
+7. **What are ACID properties, and why are they important?**  
+   *Expected Answer*:  
+   ACID ensures reliable transactions:  
+   - **Atomicity**: Transactions succeed or fail entirely.  
+   - **Consistency**: Valid data transitions.  
+   - **Isolation**: Concurrent transactions don’t interfere.  
+   - **Durability**: Committed data persists after crashes.  
+   They are critical for systems like banking where data integrity is non-negotiable.
+
+8. **What is the difference between a primary key and a unique key?**  
+   *Expected Answer*:  
+   - **Primary key**: Uniquely identifies a row; cannot be `NULL`.  
+   - **Unique key**: Ensures uniqueness but allows one `NULL` value (depending on the database).
+
+9. **How does indexing improve query performance? When might it be counterproductive?**  
+   *Expected Answer*:  
+   Indexes allow faster data retrieval by creating a lookup structure (e.g., B-tree). However, they can slow down write operations (insert/update/delete) and consume additional storage, so over-indexing should be avoided.
+
+10. **Explain the difference between horizontal and vertical scaling in SQL.**  
+    *Expected Answer*:  
+    - **Horizontal scaling**: Adding more servers (sharding/partitioning).  
+    - **Vertical scaling**: Upgrading existing server resources (CPU, RAM).  
+    SQL databases often prioritize vertical scaling, while NoSQL systems like MongoDB are built for horizontal scaling.
+
+---
+
+### **Sharding & Scalability (Both)**
+11. **What are the trade-offs of sharding a database?**  
+    *Expected Answer*:  
+    - **Pros**: Handles large datasets, improves read/write throughput.  
+    - **Cons**: Complexity in setup, potential for uneven data distribution (hotspots), and challenges in cross-shard transactions/joins.
+
+12. **How would you handle a query that requires data from multiple shards in MongoDB?**  
+    *Expected Answer*:  
+    The `mongos` router scatters the query to all relevant shards, gathers results, and returns them to the client. However, cross-shard queries can be slower, so shard keys should align with common query patterns to minimize this.
+
+13. **What is database partitioning in SQL? How does it differ from sharding?**  
+    *Expected Answer*:  
+    Partitioning splits a table into smaller segments (e.g., by date) within the same database. Sharding distributes partitions across multiple servers. Partitioning is logical; sharding is physical distribution.
+
+---
+
+### **Aggregation & Optimization**
+14. **What is the purpose of the SQL `HAVING` clause? How is it different from `WHERE`?**  
+    *Expected Answer*:  
+    `WHERE` filters rows before aggregation, while `HAVING` filters groups after aggregation (e.g., with `GROUP BY`). Example: Filtering departments with average salary > $50k.
+
+15. **In MongoDB, how would you design an aggregation pipeline to compute sales metrics by region?**  
+    *Expected Answer*:  
+    Use stages like:  
+    1. `$match` to filter relevant sales.  
+    2. `$group` to sum sales by region.  
+    3. `$sort` to rank regions.  
+    4. `$project` to reshape output (e.g., add computed fields).
+
+16. **What is a covering index in SQL? Why is it useful?**  
+    *Expected Answer*:  
+    A covering index includes all columns required by a query, allowing the database to return data directly from the index without accessing the table. This reduces I/O and speeds up queries.
+
+---
+
+### **Scenario-Based Questions**
+17. **How would you troubleshoot a slow aggregation query in MongoDB?**  
+    *Expected Answer*:  
+    - Check for missing indexes on filtered/sorted fields.  
+    - Use `explain()` to analyze the query execution plan.  
+    - Optimize pipeline stages (e.g., place `$match` early to reduce data flow).  
+
+18. **A SQL query is performing poorly despite an index. What could be the issue?**  
+    *Expected Answer*:  
+    - The index might not be used due to functions or type conversions in the query (e.g., `WHERE UPPER(name) = 'JOHN'`).  
+    - Outdated statistics causing the optimizer to choose a poor execution plan.  
+    - Table/index fragmentation.
+
+19. **When would you prefer embedding documents over referencing them in MongoDB?**  
+    *Expected Answer*:  
+    Embedding is ideal for:  
+    - Small, frequently accessed sub-documents (e.g., comments on a blog post).  
+    - Data that requires atomic updates.  
+    Referencing (normalization) is better for large or shared datasets to avoid duplication.
+
+---
+
+### **Advanced Concepts**
+20. **What is the CAP theorem? How does MongoDB comply with it?**  
+    *Expected Answer*:  
+    The CAP theorem states that a distributed system can only guarantee two of **Consistency**, **Availability**, and **Partition Tolerance**. MongoDB prioritizes **CP** (Consistency and Partition Tolerance) in sharded clusters, ensuring data consistency during partitions but potentially sacrificing availability temporarily.
+
+21. **What is eventual consistency, and where is it acceptable?**  
+    *Expected Answer*:  
+    Eventual consistency means all nodes will reflect the latest data eventually, but not immediately. It’s acceptable in systems like social media feeds or comment sections where slight delays in data sync are tolerable.
+
+---
+
+### **Key Evaluation Criteria**
+- **Depth of Understanding**: Look for clarity on trade-offs (e.g., embedding vs referencing, horizontal vs vertical scaling).  
+- **Problem-Solving**: Can they articulate strategies for optimization or scalability without code?  
+- **Real-World Analogies**: Senior candidates should use examples from past projects (e.g., “We sharded our MongoDB cluster to handle 10x traffic spikes”).  
+
+These questions assess theoretical knowledge while mimicking real-world decision-making. Adjust follow-ups based on their responses!
